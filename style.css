@@ -1,0 +1,97 @@
+/* 🌌 GLOBALNE RESETY */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 🎨 KOLORY I NEONOWA PALETA */
+:root{
+    --bg-dark: #0a0f14;
+    --text-light: #e8edf0;
+    --neon-blue: #32f0ff;
+    --neon-pink: #ff32ea;
+    --neon-green: #32ff90;
+}
+
+body{
+    background: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+}
+
+/* 🌟 SEKCJA HERO */
+header.hero{
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
+}
+header.hero h1{
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+header.hero p{
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+}
+.btn-github{
+    background: var(--neon-green);
+    padding: 10px 20px;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+/* 📌 KATEGORIE PROJEKTÓW */
+.projects{
+    padding: 40px 20px;
+}
+.projects h2{
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 2rem;
+}
+
+/* 🃏 KARTY PROJEKTÓW */
+.project-category{
+    margin-bottom: 30px;
+}
+.project-category h3{
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--neon-blue);
+    padding-left: 8px;
+}
+.cards{
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+.card{
+    background: #11202b;
+    padding: 14px;
+    border-radius: 10px;
+    min-width: 250px;
+    border: 2px solid var(--neon-pink);
+}
+.card h4{
+    margin-bottom: 6px;
+    color: var(--neon-blue);
+}
+.card a{
+    margin-top: 8px;
+    display: inline-block;
+    color: var(--neon-green);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* 📍 STOPKA */
+footer{
+    text-align: center;
+    padding: 16px;
+    font-size: 0.9rem;
+}
