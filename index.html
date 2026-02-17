@@ -1,66 +1,986 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneDevelopment • Projekty</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneDevelopment • Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & TOKENS ─────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:       #060c12;
+  --surface:  #0d1a26;
+  --glass:    rgba(13,26,38,.65);
+  --border:   rgba(50,240,255,.12);
+  --cyan:     #32f0ff;
+  --magenta:  #ff32ea;
+  --green:    #2fffb0;
+  --text:     #d6eaf8;
+  --muted:    #5d7f96;
+  --radius:   14px;
+  --mono:     'Space Mono', monospace;
+  --sans:     'Syne', sans-serif;
+  --glow-c:   0 0 22px rgba(50,240,255,.45);
+  --glow-m:   0 0 22px rgba(255,50,234,.45);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── CANVAS BACKGROUND ─────────────────────────── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .55;
+}
+
+/* ─── NAVBAR ─────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 68px;
+  background: rgba(6,12,18,.82);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: .04em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo::before {
+  content: '';
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: var(--glow-c);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.7); }
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+
+.nav-tab {
+  padding: 8px 20px;
+  border-radius: 40px;
+  font-size: .88rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .25s ease;
+  color: var(--muted);
+  background: transparent;
+  text-transform: uppercase;
+}
+.nav-tab:hover {
+  color: var(--cyan);
+  border-color: var(--border);
+  background: rgba(50,240,255,.06);
+}
+.nav-tab.active {
+  color: var(--bg);
+  background: var(--cyan);
+  border-color: var(--cyan);
+  box-shadow: var(--glow-c);
+}
+
+.nav-search {
+  position: relative;
+}
+.nav-search input {
+  background: rgba(50,240,255,.06);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 8px 18px 8px 38px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: .82rem;
+  width: 190px;
+  outline: none;
+  transition: all .25s;
+}
+.nav-search input:focus {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-c);
+  width: 240px;
+}
+.nav-search input::placeholder { color: var(--muted); }
+.nav-search svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* ─── HERO ───────────────────────────────────────── */
+.hero {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 100px 24px 80px;
+}
+.hero-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--cyan);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 5px 18px;
+  margin-bottom: 24px;
+  animation: fadeUp .6s ease both;
+}
+.hero h1 {
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #fff 20%, var(--cyan) 60%, var(--magenta) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeUp .6s .1s ease both;
+}
+.hero-sub {
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 480px;
+  margin-inline: auto;
+  animation: fadeUp .6s .2s ease both;
+}
+.hero-stats {
+  margin-top: 48px;
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp .6s .3s ease both;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--cyan);
+  font-family: var(--mono);
+  display: block;
+}
+.stat-label {
+  font-size: .78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.stat-divider {
+  width: 1px;
+  background: var(--border);
+  align-self: stretch;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ─── FILTER BAR ─────────────────────────────────── */
+.filter-bar {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto 56px;
+  padding: 0 24px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp .6s .35s ease both;
+}
+.filter-btn {
+  padding: 8px 22px;
+  border-radius: 40px;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  text-transform: uppercase;
+  transition: all .2s;
+}
+.filter-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+.filter-btn.active {
+  background: rgba(50,240,255,.12);
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+.filter-btn[data-cat="flutter"].active {
+  background: rgba(255,50,234,.12);
+  color: var(--magenta);
+  border-color: var(--magenta);
+}
+.filter-btn[data-cat="other"].active {
+  background: rgba(47,255,176,.12);
+  color: var(--green);
+  border-color: var(--green);
+}
+
+/* ─── GRID ───────────────────────────────────────── */
+.grid-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+}
+
+.category-label {
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.category-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ─── CARD ───────────────────────────────────────── */
+.card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  animation: cardIn .5s ease both;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(50,240,255,.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--card-accent, var(--cyan));
+  box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 0 1px var(--card-accent, var(--cyan)), 0 0 30px rgba(50,240,255,.1);
+}
+
+@keyframes cardIn {
+  from { opacity:0; transform: translateY(30px) scale(.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+
+.card-cat {
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--cyan));
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.card-cat::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--card-accent, var(--cyan));
+  box-shadow: 0 0 8px var(--card-accent, var(--cyan));
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.card p {
+  font-size: .88rem;
+  color: var(--muted);
+  line-height: 1.65;
+  font-family: var(--mono);
+}
+
+.card-footer {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tag-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag {
+  font-family: var(--mono);
+  font-size: .68rem;
+  padding: 3px 10px;
+  border-radius: 40px;
+  border: 1px solid rgba(255,255,255,.08);
+  color: var(--muted);
+  background: rgba(255,255,255,.03);
+}
+
+.card-arrow {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.card:hover .card-arrow {
+  background: var(--card-accent, var(--cyan));
+  border-color: var(--card-accent, var(--cyan));
+  color: var(--bg);
+  box-shadow: 0 0 14px var(--card-accent, var(--cyan));
+}
+
+/* ─── EMPTY STATE ────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 80px 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: .9rem;
+  display: none;
+}
+.empty-state svg { margin-bottom: 16px; opacity: .4; }
+
+/* ─── MODAL ──────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: #0d1a26;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+  animation: modalIn .3s ease both;
+  position: relative;
+}
+@keyframes modalIn {
+  from { opacity:0; transform: scale(.94) translateY(20px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 28px 28px 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+.modal-cat {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--modal-accent, var(--cyan));
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-cat::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--modal-accent, var(--cyan));
+  box-shadow: 0 0 10px var(--modal-accent, var(--cyan));
+}
+.modal-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.modal-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all .2s;
+}
+.modal-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+.modal-body {
+  padding: 24px 28px 28px;
+}
+.modal-desc {
+  font-family: var(--mono);
+  font-size: .92rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.modal-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+.modal-tag {
+  font-family: var(--mono);
+  font-size: .72rem;
+  padding: 4px 14px;
+  border-radius: 40px;
+  border: 1px solid rgba(255,255,255,.1);
+  color: var(--text);
+  background: rgba(255,255,255,.04);
+}
+
+.modal-cta {
+  display: flex;
+  gap: 12px;
+}
+.btn {
+  flex: 1;
+  text-align: center;
+  padding: 13px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: .88rem;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: all .2s;
+  cursor: pointer;
+  border: none;
+  font-family: var(--sans);
+}
+.btn-primary {
+  background: var(--modal-accent, var(--cyan));
+  color: var(--bg);
+  box-shadow: 0 4px 20px rgba(50,240,255,.25);
+}
+.btn-primary:hover { filter: brightness(1.1); box-shadow: 0 6px 28px rgba(50,240,255,.4); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ─── FOOTER ─────────────────────────────────────── */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 32px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--muted);
+}
+footer span { color: var(--cyan); }
+
+/* ─── SCROLLBAR ──────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #1e3244; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar { padding: 0 20px; gap: 12px; flex-wrap: wrap; height: auto; padding-block: 14px; }
+  .nav-tabs { display: none; }
+  .project-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 20px; }
+  .stat-divider { display: none; }
+}
+</style>
 </head>
 <body>
-    <!-- 🎯 GŁÓWNA SEKCJA HERO -->
-    <header class="hero">
-        <h1>OneDevelopment</h1>
-        <p>Zespół programistów — projekty Python, Flutter & inne 🔥</p>
-        <a class="btn-github" href="https://github.com/OneDevelopmentPL" target="_blank">Zobacz nas na GitHub</a>
-    </header>
 
-    <!-- 📦 PROJEKTY -->
-    <section class="projects">
-        <h2>Projekty według kategorii</h2>
+<!-- PARTICLE CANVAS -->
+<canvas id="bg-canvas"></canvas>
 
-        <!-- 🔹 Python -->
-        <div class="project-category">
-            <h3>🐍 Python</h3>
-            <div class="cards">
-                <!-- Tu wrzuć linki i opisy projektów Python z OneDevelopmentPL -->
-                <div class="card">
-                    <h4>Projekt Python #1</h4>
-                    <p>Opis projektu Python</p>
-                    <a href="https://github.com/OneDevelopmentPL/REPO1" target="_blank">Repozytorium</a>
-                </div>
-                <!-- 📌 Dodaj więcej kart jeśli potrzebne -->
-            </div>
+<!-- NAV -->
+<nav class="navbar">
+  <div class="logo">OneDevelopment</div>
+  <ul class="nav-tabs" id="navTabs">
+    <li class="nav-tab active" data-cat="all">All</li>
+    <li class="nav-tab" data-cat="python">Python</li>
+    <li class="nav-tab" data-cat="flutter">Flutter</li>
+    <li class="nav-tab" data-cat="other">Other</li>
+  </ul>
+  <div class="nav-search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Szukaj projektu…">
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Portfolio • 2026</div>
+  <h1>OneDevelopment</h1>
+  <p class="hero-sub">Projekty w Pythonie, Flutterze i nie tylko — klikaj, eksploruj, inspiruj się.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num" id="countPython">0</span>
+      <span class="stat-label">Python</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num" id="countFlutter">0</span>
+      <span class="stat-label">Flutter</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num" id="countOther">0</span>
+      <span class="stat-label">Inne</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num" id="countAll">0</span>
+      <span class="stat-label">Razem</span>
+    </div>
+  </div>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-cat="all">Wszystkie</button>
+  <button class="filter-btn" data-cat="python">🐍 Python</button>
+  <button class="filter-btn" data-cat="flutter">💙 Flutter</button>
+  <button class="filter-btn" data-cat="other">⚡ Inne</button>
+</div>
+
+<!-- GRID -->
+<section class="grid-section" id="gridSection">
+  <div class="empty-state" id="emptyState">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <p>Brak projektów pasujących do wyszukiwania.</p>
+  </div>
+  <div class="project-grid" id="projectGrid"></div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <div class="modal-cat" id="modalCat"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-tags" id="modalTags"></div>
+      <div class="modal-cta">
+        <a class="btn btn-primary" id="modalGithubBtn" href="#" target="_blank">Zobacz na GitHub →</a>
+        <button class="btn btn-ghost" id="modalCloseBtn">Zamknij</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  Zbudowane z ❤ przez <span>OneDevelopment</span> · 2026
+</footer>
+
+<script>
+/* ─── DATA ─────────────────────────────────────── */
+const projects = [
+  {
+    category: 'python',
+    title: 'mp3tobuzzer',
+    desc: 'Konwertuje mp3 do kodu Arduino Uno lub esp32. Obsługuje pobieranie muzyki z YT',
+    tags: ['ffmpeg', 'yt-dlp', 'arduino'],
+    github: 'https://github.com/OneDevelopmentPL/mp3tobuzzer'
+  },
+  {
+    category: 'python',
+    title: 'OneCode OSS',
+    desc: 'Proste IDE do programowania w Python.',
+    tags: ['opensourcesoftware', 'programming', 'ide'],
+    github: 'https://github.com/OneDevelopmentPL/onecode'
+  },
+  {
+    category: 'python',
+    title: 'aurx',
+    desc: 'Menadżer pakietów AUR w Python.',
+    tags: ['archlinux', 'AUR', 'cli'],
+    github: 'https://github.com/OneDevelopmentPL/aurx'
+  },
+  {
+    category: 'python',
+    title: 'OneOffice 3.x',
+    desc: 'Edytor tekstu, stworzony przede wszystkim do użyciu na lekcjach w szkole',
+    tags: ['editor', 'notes', 'school'],
+    github: 'https://github.com/OneDevelopmentPL/oneoffice3'
+  },
+  {
+    category: 'python',
+    title: 'OneOffice 2.x',
+    desc: 'Projekt aktualnie nie jest nigdzie dostępny. Nie był open-source, ale może będzie.',
+    tags: ['editor', 'notes', 'school'],
+    github: 'https://sites.google.com/view/niedostepnerepo'
+  },
+  {
+    category: 'python',
+    title: 'OneOffice 1.x i OneOffice Beta',
+    desc: 'Projekt aktualnie nie jest nigdzie dostępny. Nie był open-source, ale może będzie.',
+    tags: ['editor', 'notes', 'school'],
+    github: 'https://sites.google.com/view/niedostepnerepo'
+  },
+  {
+    category: 'other',
+    title: 'XFUX',
+    desc: 'Środowisko graficzne na bazie XFCE, ale z animacjami i zaokrąglonymi oknami.',
+    tags: ['de', 'shell', 'xfce'],
+    github: 'https://github.com/OneDevelopmentPL/xfux'
+  },
+  {
+    category: 'python',
+    title: 'OneWeb',
+    desc: 'Lekka przeglądarka internetowa. Prywatność nie jest jej 1. miejscem.',
+    tags: ['pyqt6', 'cef', 'browser'],
+    github: 'https://github.com/OneDevelopmentPL/oneweb'
+  },
+  {
+    category: 'python',
+    title: 'OpenBrowsing',
+    desc: 'Przeglądarka internetowa, która ma zaawansowane systemy ochrony prywatności (która jest jej 1. miejscem). Posiada auto-uzupełnianie lokalnie zapisywanych haseł.',
+    tags: ['private', 'browser', 'cef'],
+    github: 'https://github.com/OneDevelopmentPL/openbrowsing'
+  },
+  {
+    category: 'python',
+    title: 'OpenCore-Simplify-RaportGenerator (OC-S-RaportGenerator)',
+    desc: 'Pomocnik do generowania raportów hardware do OpenCore-Simplify na dystrybucje Linuxa.',
+    tags: ['hackintosh', 'linux', 'cli'],
+    github: 'https://github.com/OneDevelopmentPL/OC-S-ReportGenerator'
+  },
+  {
+    category: 'python',
+    title: 'tiri-text',
+    desc: 'Tiri to asystent tekstowy, który jest podobny do Siri od Apple na Mac',
+    tags: ['assistant', 'linux', 'PyQt6'],
+    github: 'https://github.com/OneDevelopmentPL/tiri-text'
+  },
+  {
+    category: 'flutter',
+    title: 'OneBot',
+    desc: 'Aplikacja do sterowania robotami z Bluetooth HC-06.',
+    tags: ['Dart', 'HC-06', 'flutter_ble_plus'],
+    github: 'https://github.com/OneDevelopmentPL/onebot'
+  },
+  {
+    category: 'flutter',
+    title: 'Posiadam bardzo dużo projektów, jednak nie są JESZCZE na github',
+    desc: '',
+    tags: ['Flutter', 'Flutter', 'Tak'],
+    github: 'https://sites.google.com/view/niedostepnerepo'
+  },
+  {
+    category: 'other',
+    title: 'zolwik-pro / zolwik-lite',
+    desc: 'Nawigacje stworzone w HTML CSS JS',
+    tags: ['JavaScript', 'CSS', 'HTML5'],
+    github: 'https://github.com/OneDevelopmentPL/zolwik-pro'
+  },
+  {
+    category: 'other',
+    title: 'shadow-strike',
+    desc: 'Gierka w HTML5',
+    tags: ['JavaScript', 'CSS', 'HTML5'],
+    github: 'https://github.com/OneDevelopmentPL/shadow-strike'
+  },
+  {
+    category: 'other',
+    title: 'onetv',
+    desc: 'Prosty system na telewizory',
+    tags: ['JavaScript', 'CSS', 'HTML5'],
+    github: 'https://github.com/OneDevelopmentPL/onetv'
+  },
+  {
+    category: 'other',
+    title: 'prompt-lab',
+    desc: 'Można tu testować AI za pomoca OpenRouter Free API',
+    tags: ['JavaScript', 'CSS', 'HTML5'],
+    github: 'https://github.com/OneDevelopmentPL/prompt-lab'
+  },
+  {
+    category: 'other',
+    title: 'UltraSense',
+    desc: 'Prosta biblioteka do sterowania popularnymi czujnikami odległości HC-SR04',
+    tags: ['CPP', 'Arduino', 'ino'],
+    github: 'https://github.com/OneDevelopmentPL/UltraSense'
+  },
+  {
+    category: 'other',
+    title: 'MY-DynamicIsland-Continuation',
+    desc: 'Fork i kontynuacja popularnego projektu, który tworzy dynamiczną wyspę, jak na iPhone stylizowanego z MaterialYou.',
+    tags: ['Kotlin', 'gradle', 'ios'],
+    github: 'https://github.com/OneDevelopmentPL/my-dynamicisland-continuation'
+  },
+];
+
+const ACCENT = {
+  python:  'var(--cyan)',
+  flutter: 'var(--magenta)',
+  other:   'var(--green)'
+};
+const CAT_LABEL = {
+  python:  '🐍 Python',
+  flutter: '💙 Flutter',
+  other:   '⚡ Other'
+};
+
+/* ─── STATS ─────────────────────────────────────── */
+function animateCount(el, target) {
+  let val = 0;
+  const step = Math.ceil(target / 20);
+  const t = setInterval(() => {
+    val = Math.min(val + step, target);
+    el.textContent = val;
+    if (val >= target) clearInterval(t);
+  }, 40);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const py = projects.filter(p => p.category === 'python').length;
+  const fl = projects.filter(p => p.category === 'flutter').length;
+  const ot = projects.filter(p => p.category === 'other').length;
+  animateCount(document.getElementById('countPython'), py);
+  animateCount(document.getElementById('countFlutter'), fl);
+  animateCount(document.getElementById('countOther'), ot);
+  animateCount(document.getElementById('countAll'), projects.length);
+});
+
+/* ─── RENDER GRID ───────────────────────────────── */
+let activeFilter = 'all';
+let searchQuery  = '';
+
+function renderGrid() {
+  const grid = document.getElementById('projectGrid');
+  const empty = document.getElementById('emptyState');
+  grid.innerHTML = '';
+
+  const filtered = projects.filter(p => {
+    const catOk = activeFilter === 'all' || p.category === activeFilter;
+    const q = searchQuery.toLowerCase();
+    const searchOk = !q ||
+      p.title.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q) ||
+      p.tags.some(t => t.toLowerCase().includes(q));
+    return catOk && searchOk;
+  });
+
+  if (!filtered.length) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  filtered.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.setProperty('--card-accent', ACCENT[p.category]);
+    card.style.animationDelay = `${i * 60}ms`;
+    card.innerHTML = `
+      <div class="card-cat">${CAT_LABEL[p.category]}</div>
+      <h2>${p.title}</h2>
+      <p>${p.desc}</p>
+      <div class="card-footer">
+        <div class="tag-list">
+          ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
         </div>
-
-        <!-- 🔹 Flutter -->
-        <div class="project-category">
-            <h3>📱 Flutter</h3>
-            <div class="cards">
-                <div class="card">
-                    <h4>Projekt Flutter #1</h4>
-                    <p>Opis projektu Flutter</p>
-                    <a href="https://github.com/OneDevelopmentPL/REPO2" target="_blank">Repozytorium</a>
-                </div>
-            </div>
+        <div class="card-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
         </div>
+      </div>`;
+    card.addEventListener('click', () => openModal(p));
+    grid.appendChild(card);
+  });
+}
 
-        <!-- 🔹 Inne -->
-        <div class="project-category">
-            <h3>🛠️ Inne projekty</h3>
-            <div class="cards">
-                <div class="card">
-                    <h4>Inny Projekt #1</h4>
-                    <p>Opis projektu.</p>
-                    <a href="https://github.com/OneDevelopmentPL/REPO3" target="_blank">Repozytorium</a>
-                </div>
-            </div>
-        </div>
-    </section>
+/* ─── MODAL ─────────────────────────────────────── */
+const overlay = document.getElementById('modalOverlay');
 
-    <footer>
-        <p>© 2026 OneDevelopment — kod open source</p>
-    </footer>
+function openModal(p) {
+  const accent = ACCENT[p.category];
+  overlay.classList.add('open');
+  document.getElementById('modalBox').style.setProperty('--modal-accent', accent);
+  document.getElementById('modalCat').textContent = CAT_LABEL[p.category];
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalGithubBtn').href = p.github;
+  document.getElementById('modalGithubBtn').style.background = accent;
 
-    <script src="script.js"></script>
+  const tagsEl = document.getElementById('modalTags');
+  tagsEl.innerHTML = p.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+/* ─── FILTERS ───────────────────────────────────── */
+function setFilter(cat) {
+  activeFilter = cat;
+
+  // sync nav tabs
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === cat);
+  });
+  // sync filter btns
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.cat === cat);
+  });
+
+  renderGrid();
+}
+
+document.getElementById('navTabs').addEventListener('click', e => {
+  if (e.target.classList.contains('nav-tab')) setFilter(e.target.dataset.cat);
+});
+document.getElementById('filterBar').addEventListener('click', e => {
+  if (e.target.classList.contains('filter-btn')) setFilter(e.target.dataset.cat);
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  renderGrid();
+});
+
+/* ─── PARTICLE CANVAS ───────────────────────────── */
+(function () {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(init) {
+      this.x = Math.random() * W;
+      this.y = init ? Math.random() * H : H + 10;
+      this.r = Math.random() * 1.5 + .3;
+      this.speed = Math.random() * .4 + .1;
+      this.alpha = Math.random() * .6 + .1;
+      this.hue = Math.random() < .5 ? 185 : 295; // cyan or magenta
+    }
+    update() {
+      this.y -= this.speed;
+      if (this.y < -10) this.reset(false);
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  resize();
+  for (let i = 0; i < 90; i++) particles.push(new Particle());
+  window.addEventListener('resize', resize);
+
+  (function loop() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ─── INIT ───────────────────────────────────────── */
+renderGrid();
+</script>
 </body>
 </html>
